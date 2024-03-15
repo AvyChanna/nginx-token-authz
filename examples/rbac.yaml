@@ -1,0 +1,16 @@
+users:
+  uid1:
+    groups:
+      - gid1
+    perms:
+      perm1: true
+      perm2: true
+
+groups:
+  gid1:
+    perms:
+      perm3: true
+      perm4: false
+
+globalAllows:
+  - perm5
