@@ -1,7 +1,19 @@
-package rbac
+package parser
 
 import (
+	"errors"
+	"regexp"
+
 	"github.com/AvyChanna/nginx-token-authz/lib/set"
+)
+
+var (
+	ErrUidInvalid  = errors.New("uid is invalid")
+	ErrGidInvalid  = errors.New("gid is invalid")
+	ErrPermInvalid = errors.New("perm is invalid")
+	ErrGidNotFound = errors.New("gid not found")
+
+	strRegex = regexp.MustCompile("^[a-zA-Z0-9.]+$")
 )
 
 func validateUid(uid string) error {
@@ -40,7 +52,7 @@ func validatePset(pset set.StrSet) error {
 	return nil
 }
 
-func (d *Config) validateData() error {
+func validateData(d *Config) error {
 	for gid, group := range d.Groups {
 		if err := validateGid(gid); err != nil {
 			return err
@@ -57,7 +69,7 @@ func (d *Config) validateData() error {
 		if user.Groups != nil {
 			for gid := range *user.Groups {
 				if _, ok := d.Groups[gid]; !ok {
-					return ErrGidInvalid
+					return ErrGidNotFound
 				}
 			}
 		}

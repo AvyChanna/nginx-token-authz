@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"sync/atomic"
 
-	"github.com/AvyChanna/nginx-token-authz/lib/rbac"
+	"github.com/AvyChanna/nginx-token-authz/lib/rbac/auther"
 )
 
-func ping(autherPtr *atomic.Pointer[rbac.Auther]) http.HandlerFunc {
+func ping(autherPtr *atomic.Pointer[auther.Auther]) http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		val, err := json.Marshal(autherPtr.Load())
 		if err != nil {
@@ -22,7 +22,7 @@ func ping(autherPtr *atomic.Pointer[rbac.Auther]) http.HandlerFunc {
 	}
 }
 
-func NewMux(autherPtr *atomic.Pointer[rbac.Auther]) *http.ServeMux {
+func NewMux(autherPtr *atomic.Pointer[auther.Auther]) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/ping", ping(autherPtr))

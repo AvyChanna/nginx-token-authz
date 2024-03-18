@@ -1,4 +1,4 @@
-package rbac
+package reader
 
 import (
 	"os"
@@ -8,16 +8,18 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/AvyChanna/nginx-token-authz/lib/app"
+	"github.com/AvyChanna/nginx-token-authz/lib/rbac/auther"
+	"github.com/AvyChanna/nginx-token-authz/lib/rbac/parser"
 	"github.com/AvyChanna/nginx-token-authz/lib/set"
 )
 
-func ReadConfig(fileName string) (*Auther, error) {
+func ReadConfig(fileName string) (*auther.Auther, error) {
 	data, err := os.ReadFile(fileName)
 	if err != nil {
 		return nil, err
 	}
 
-	var d Config
+	var d parser.Config
 
 	err = yaml.Unmarshal(data, &d)
 	if err != nil {
@@ -37,8 +39,8 @@ func ReadConfig(fileName string) (*Auther, error) {
 	return d.Done()
 }
 
-func WatchConfig(filename string, pollDur time.Duration) *atomic.Pointer[Auther] {
-	autherPtr := &atomic.Pointer[Auther]{}
+func WatchConfig(filename string, pollDur time.Duration) *atomic.Pointer[auther.Auther] {
+	autherPtr := &atomic.Pointer[auther.Auther]{}
 	newAuther, _ := ReadConfig(filename)
 	autherPtr.Store(newAuther)
 

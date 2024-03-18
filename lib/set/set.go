@@ -23,6 +23,14 @@ type (
 	Set[T comparable] map[T]empty
 )
 
+func New[T comparable](vals ...T) Set[T] {
+	ret := make(Set[T], len(vals))
+	for _, val := range vals {
+		ret.Add(val)
+	}
+	return ret
+}
+
 func (s Set[T]) Add(v T) {
 	s[v] = empty{}
 }

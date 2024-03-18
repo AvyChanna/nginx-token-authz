@@ -1,4 +1,4 @@
-package rbac
+package auther
 
 import (
 	"encoding/json"
@@ -11,7 +11,14 @@ type Auther struct {
 	admins set.StrSet            // {uid}
 }
 
-func (a Auther) IsValidClaim(uid string, claim string) bool {
+func New(uidPermMap map[string]set.StrSet, admins set.StrSet) *Auther {
+	return &Auther{
+		data:   uidPermMap,
+		admins: admins,
+	}
+}
+
+func (a Auther) IsValidClaim(uid, claim string) bool {
 	if a.admins.Contains(uid) {
 		return true
 	}

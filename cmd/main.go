@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/AvyChanna/nginx-token-authz/lib/app"
-	"github.com/AvyChanna/nginx-token-authz/lib/rbac"
+	"github.com/AvyChanna/nginx-token-authz/lib/rbac/reader"
 	"github.com/AvyChanna/nginx-token-authz/lib/server"
 )
 
@@ -37,7 +37,7 @@ func main() {
 
 	app.Init(ctx, debugEnabled)
 
-	autherPtr := rbac.WatchConfig(configPath, PollDuration)
+	autherPtr := reader.WatchConfig(configPath, PollDuration)
 	if autherPtr.Load() == nil {
 		app.Get().Log().Error("error loading config on first run. Exiting...")
 	}

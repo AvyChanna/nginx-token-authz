@@ -1,27 +1,13 @@
-package rbac
+package parser
 
 import (
-	"regexp"
-
+	"github.com/AvyChanna/nginx-token-authz/lib/rbac/auther"
 	"github.com/AvyChanna/nginx-token-authz/lib/set"
 )
 
-var (
-	defaultUid = "_"
-	strRegex   = regexp.MustCompile("^[a-zA-Z0-9.]+$")
-)
-
-// defaultPerm = "_"
-
 func New() *Config {
 	return &Config{
-		Users: map[string]User{
-			defaultUid: {
-				Admin:  false,
-				Groups: &set.StrSet{},
-				Pmap:   map[string]bool{},
-			},
-		},
+		Users:       map[string]User{},
 		Groups:      map[string]Group{},
 		AllowAllSet: &set.StrSet{},
 	}
@@ -110,25 +96,23 @@ func (d *Config) isAdmin(user User) bool {
 	return false
 }
 
-func (d *Config) Done() (*Auther, error) {
-	err := d.validateData()
+func (d *Config) Done() (*auther.Auther, error) {
+	err := validateData(d)
 	if err != nil {
 		return nil, err
 	}
 
-	f := &Auther{
-		data:   map[string]set.StrSet{},
-		admins: set.StrSet{},
-	}
+	uidPerms := map[string]set.StrSet{}
+	admins := set.StrSet{}
 
 	for uid, user := range d.Users {
 		if d.isAdmin(user) {
-			f.admins.Add(uid)
+			admins.Add(uid)
 			continue
 		}
 
-		f.data[uid] = d.getAllowedPerms(user)
+		uidPerms[uid] = d.getAllowedPerms(user)
 	}
 
-	return f, nil
+	return auther.New(uidPerms, admins), nil
 }
