@@ -37,9 +37,12 @@ func main() {
 
 	app.Init(ctx, debugEnabled)
 
-	autherPtr := reader.WatchConfig(configPath, PollDuration)
+	fmt.Println(configPath)
+	rbacReader := reader.New(configPath)
+	autherPtr := rbacReader.WatchConfig(PollDuration)
 	if autherPtr.Load() == nil {
 		app.Get().Log().Error("error loading config on first run. Exiting...")
+		os.Exit(1)
 	}
 
 	mux := server.NewMux(autherPtr)

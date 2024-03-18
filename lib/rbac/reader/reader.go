@@ -10,39 +10,60 @@ import (
 	"github.com/AvyChanna/nginx-token-authz/lib/app"
 	"github.com/AvyChanna/nginx-token-authz/lib/rbac/auther"
 	"github.com/AvyChanna/nginx-token-authz/lib/rbac/parser"
-	"github.com/AvyChanna/nginx-token-authz/lib/set"
 )
 
-func ReadConfig(fileName string) (*auther.Auther, error) {
-	data, err := os.ReadFile(fileName)
-	if err != nil {
-		return nil, err
+type Reader struct {
+	fileName string
+	config   *atomic.Pointer[auther.Auther]
+	lastData string // string is immutable representation of bytes
+}
+
+func New(filename string) Reader {
+	return Reader{
+		fileName: filename,
+		config:   &atomic.Pointer[auther.Auther]{},
+		lastData: "",
 	}
+}
+
+func (r *Reader) readConfig() error {
+	data, err := os.ReadFile(r.fileName)
+	if err != nil {
+		return err
+	}
+
+	if r.lastData == string(data) {
+		app.Get().Log().Debug("No changes in config file")
+		return nil
+	}
+
+	app.Get().Log().Debug("Reading config file")
 
 	var d parser.Config
 
 	err = yaml.Unmarshal(data, &d)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	for _, user := range d.Users {
-		if user.Groups == nil {
-			user.Groups = &set.StrSet{}
-		}
+	autherObj, err := d.Done()
+	if err == nil {
+		r.config.Store(autherObj)
 	}
 
-	if d.AllowAllSet == nil {
-		d.AllowAllSet = &set.StrSet{}
-	}
-
-	return d.Done()
+	return err
 }
 
-func WatchConfig(filename string, pollDur time.Duration) *atomic.Pointer[auther.Auther] {
-	autherPtr := &atomic.Pointer[auther.Auther]{}
-	newAuther, _ := ReadConfig(filename)
-	autherPtr.Store(newAuther)
+func (r *Reader) ReadConfig() (*auther.Auther, error) {
+	err := r.readConfig()
+	return r.config.Load(), err
+}
+
+func (r *Reader) WatchConfig(pollDur time.Duration) *atomic.Pointer[auther.Auther] {
+	err := r.readConfig()
+	if err != nil {
+		app.Get().Log().Error(err)
+	}
 
 	go func() {
 		ticker := time.NewTicker(pollDur)
@@ -53,15 +74,14 @@ func WatchConfig(filename string, pollDur time.Duration) *atomic.Pointer[auther.
 			case <-app.Get().Ctx().Done():
 				return
 			case <-ticker.C:
-				newAuther, err := ReadConfig(filename)
+				err := r.readConfig()
 				if err != nil {
 					app.Get().Log().Errorf("error parsing file for changes = %s", err)
 					continue
 				}
-				autherPtr.Store(newAuther)
 			}
 		}
 	}()
 
-	return autherPtr
+	return r.config
 }
