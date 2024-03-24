@@ -1,0 +1,4 @@
+users:
+  uid1:
+    perms:
+      perm2: true

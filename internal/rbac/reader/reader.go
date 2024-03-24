@@ -1,6 +1,7 @@
 package reader
 
 import (
+	"errors"
 	"os"
 	"sync/atomic"
 	"time"
@@ -11,6 +12,8 @@ import (
 	"github.com/AvyChanna/nginx-token-authz/internal/rbac/auther"
 	"github.com/AvyChanna/nginx-token-authz/internal/rbac/parser"
 )
+
+var ErrBadConfig = errors.New("bad config file")
 
 type Reader struct {
 	fileName string
@@ -30,6 +33,11 @@ func (r *Reader) readConfig() error {
 	data, err := os.ReadFile(r.fileName)
 	if err != nil {
 		return err
+	}
+
+	if len(data) == 0 {
+		app.Get().Log().Debug("Config file is empty")
+		return ErrBadConfig
 	}
 
 	if r.lastData == string(data) {

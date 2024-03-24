@@ -18,7 +18,11 @@ func New(uidPermMap map[string]set.StrSet, admins set.StrSet) *Auther {
 	}
 }
 
-func (a Auther) IsValidClaim(uid, claim string) bool {
+func (a *Auther) IsValidClaim(uid, claim string) bool {
+	if a == nil {
+		return false
+	}
+
 	if a.admins.Contains(uid) {
 		return true
 	}
