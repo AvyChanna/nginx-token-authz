@@ -4,7 +4,7 @@ import (
 	"errors"
 	"regexp"
 
-	"github.com/AvyChanna/nginx-token-authz/lib/set"
+	"github.com/AvyChanna/nginx-token-authz/internal/set"
 )
 
 var (
@@ -57,6 +57,7 @@ func validateData(d *Config) error {
 		if err := validateGid(gid); err != nil {
 			return err
 		}
+
 		if err := validatePmap(group.Pmap); err != nil {
 			return err
 		}
@@ -66,6 +67,7 @@ func validateData(d *Config) error {
 		if err := validateUid(uid); err != nil {
 			return err
 		}
+
 		if user.Groups != nil {
 			for gid := range *user.Groups {
 				if _, ok := d.Groups[gid]; !ok {
@@ -78,6 +80,7 @@ func validateData(d *Config) error {
 			return err
 		}
 	}
+
 	if d.AllowAllSet != nil {
 		if err := validatePset(*d.AllowAllSet); err != nil {
 			return err

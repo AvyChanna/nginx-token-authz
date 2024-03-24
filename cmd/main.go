@@ -10,9 +10,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/AvyChanna/nginx-token-authz/lib/app"
-	"github.com/AvyChanna/nginx-token-authz/lib/rbac/reader"
-	"github.com/AvyChanna/nginx-token-authz/lib/server"
+	"github.com/AvyChanna/nginx-token-authz/internal/app"
+	"github.com/AvyChanna/nginx-token-authz/internal/rbac/reader"
+	"github.com/AvyChanna/nginx-token-authz/internal/server"
 )
 
 var (

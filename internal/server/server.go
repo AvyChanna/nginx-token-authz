@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"sync/atomic"
 
-	"github.com/AvyChanna/nginx-token-authz/lib/rbac/auther"
+	"github.com/AvyChanna/nginx-token-authz/internal/rbac/auther"
 )
 
 func ping(autherPtr *atomic.Pointer[auther.Auther]) http.HandlerFunc {

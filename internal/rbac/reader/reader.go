@@ -7,9 +7,9 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/AvyChanna/nginx-token-authz/lib/app"
-	"github.com/AvyChanna/nginx-token-authz/lib/rbac/auther"
-	"github.com/AvyChanna/nginx-token-authz/lib/rbac/parser"
+	"github.com/AvyChanna/nginx-token-authz/internal/app"
+	"github.com/AvyChanna/nginx-token-authz/internal/rbac/auther"
+	"github.com/AvyChanna/nginx-token-authz/internal/rbac/parser"
 )
 
 type Reader struct {

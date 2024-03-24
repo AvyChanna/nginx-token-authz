@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"github.com/AvyChanna/nginx-token-authz/lib/rbac/auther"
-	"github.com/AvyChanna/nginx-token-authz/lib/set"
+	"github.com/AvyChanna/nginx-token-authz/internal/rbac/auther"
+	"github.com/AvyChanna/nginx-token-authz/internal/set"
 )
 
 func New() *Config {
@@ -93,6 +93,7 @@ func (d *Config) isAdmin(user User) bool {
 			return true
 		}
 	}
+
 	return false
 }
 

@@ -25,9 +25,11 @@ type (
 
 func New[T comparable](vals ...T) Set[T] {
 	ret := make(Set[T], len(vals))
+
 	for _, val := range vals {
 		ret.Add(val)
 	}
+
 	return ret
 }
 
@@ -41,9 +43,11 @@ func (s Set[T]) Remove(v T) {
 
 func (s Set[T]) Values() []T {
 	ret := make([]T, 0, len(s))
+
 	for v := range s {
 		ret = append(ret, v)
 	}
+
 	return ret
 }
 
@@ -54,6 +58,7 @@ func (s Set[T]) Contains(v T) bool {
 
 func (s Set[T]) MarshalJSON() ([]byte, error) {
 	keys := make([]T, 0, len(s))
+
 	for v := range s {
 		keys = append(keys, v)
 	}
@@ -71,14 +76,17 @@ func (s *Set[T]) UnmarshalJSON(data []byte) error {
 	for _, key := range keys {
 		s.Add(key)
 	}
+
 	return nil
 }
 
 func (s Set[T]) MarshalYAML() (any, error) {
 	keys := make([]T, 0, len(s))
+
 	for v := range s {
 		keys = append(keys, v)
 	}
+
 	return keys, nil
 }
 
@@ -94,5 +102,6 @@ func (s *Set[T]) UnmarshalYAML(data *yaml.Node) error {
 	for _, key := range keys {
 		s.Add(key)
 	}
+
 	return nil
 }

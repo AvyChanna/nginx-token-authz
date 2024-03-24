@@ -3,7 +3,7 @@ package auther
 import (
 	"encoding/json"
 
-	"github.com/AvyChanna/nginx-token-authz/lib/set"
+	"github.com/AvyChanna/nginx-token-authz/internal/set"
 )
 
 type Auther struct {

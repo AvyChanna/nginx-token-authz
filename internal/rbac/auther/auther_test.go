@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/AvyChanna/nginx-token-authz/lib/set"
-	"github.com/AvyChanna/nginx-token-authz/lib/tabletest"
+	"github.com/AvyChanna/nginx-token-authz/internal/set"
+	"github.com/AvyChanna/nginx-token-authz/internal/tabletest"
 )
 
 func TestAuther(t *testing.T) {
