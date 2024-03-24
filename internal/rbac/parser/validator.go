@@ -68,11 +68,9 @@ func validateData(d *Config) error {
 			return err
 		}
 
-		if user.Groups != nil {
-			for gid := range *user.Groups {
-				if _, ok := d.Groups[gid]; !ok {
-					return ErrGidNotFound
-				}
+		for gid := range user.Groups {
+			if _, ok := d.Groups[gid]; !ok {
+				return ErrGidNotFound
 			}
 		}
 
@@ -81,10 +79,8 @@ func validateData(d *Config) error {
 		}
 	}
 
-	if d.AllowAllSet != nil {
-		if err := validatePset(*d.AllowAllSet); err != nil {
-			return err
-		}
+	if err := validatePset(d.AllowAllSet); err != nil {
+		return err
 	}
 
 	return nil

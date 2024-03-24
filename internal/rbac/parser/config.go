@@ -9,13 +9,13 @@ func New() *Config {
 	return &Config{
 		Users:       map[string]User{},
 		Groups:      map[string]Group{},
-		AllowAllSet: &set.StrSet{},
+		AllowAllSet: set.New[string](),
 	}
 }
 
 type User struct {
 	Admin  bool            `yaml:"admin"`
-	Groups *set.StrSet     `yaml:"groups"`
+	Groups set.StrSet      `yaml:"groups"`
 	Pmap   map[string]bool `yaml:"perms"`
 }
 
@@ -27,14 +27,14 @@ type Group struct {
 type Config struct {
 	Users       map[string]User  `yaml:"users"`
 	Groups      map[string]Group `yaml:"groups"`
-	AllowAllSet *set.StrSet      `yaml:"globalAllows"`
+	AllowAllSet set.StrSet       `yaml:"globalAllows"`
 }
 
 func (d *Config) getAllowedPerms(user User) set.StrSet {
 	// this is the final whitelist for user. missing perms are blocked
-	whiteList := set.StrSet{}
+	whiteList := set.New[string]()
 
-	userBlackList := set.StrSet{}
+	userBlackList := set.New[string]()
 
 	for perm, val := range user.Pmap {
 		if val {
@@ -44,10 +44,10 @@ func (d *Config) getAllowedPerms(user User) set.StrSet {
 		}
 	}
 
-	groupWhiteList := set.StrSet{}
-	groupBlackList := set.StrSet{}
+	groupWhiteList := set.New[string]()
+	groupBlackList := set.New[string]()
 
-	for gid := range *user.Groups {
+	for gid := range user.Groups {
 		group := d.Groups[gid]
 
 		for perm, val := range group.Pmap {
@@ -74,7 +74,7 @@ func (d *Config) getAllowedPerms(user User) set.StrSet {
 
 	// add global whitelist rules
 	// even user/group level blocking won't block these
-	for dPerm := range *d.AllowAllSet {
+	for dPerm := range d.AllowAllSet {
 		whiteList.Add(dPerm)
 	}
 
@@ -86,7 +86,7 @@ func (d *Config) isAdmin(user User) bool {
 		return true
 	}
 
-	for gid := range *user.Groups {
+	for gid := range user.Groups {
 		group := d.Groups[gid]
 
 		if group.Admin {
@@ -104,7 +104,7 @@ func (d *Config) Done() (*auther.Auther, error) {
 	}
 
 	uidPerms := map[string]set.StrSet{}
-	admins := set.StrSet{}
+	admins := set.New[string]()
 
 	for uid, user := range d.Users {
 		if d.isAdmin(user) {
